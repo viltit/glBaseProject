@@ -19,17 +19,13 @@ namespace moe {
 		Transform()
 			: _scale{ 1.0f, 1.0f, 1.0f },
 			  _o{ 1, 0, 0, 0 }
-		{
-			std::cout << _o.w << "/" << _o.x << "/" << _o.y << "/"  << _o.z << std::endl;
-		}
+		{ }
 
 		Transform(const glm::vec3& pos, const glm::vec3 scale = glm::vec3{ 1.0f, 1.0f, 1.0f })
 			: _pos{ pos },
 			  _scale{ scale },
 			  _o{ 1, 0, 0, 0 }
-		{
-			std::cout << _o.w << "/" << _o.x << "/" << _o.y << "/"  << _o.z << std::endl;
-		}
+		{ }
 
 		/* setters: */
 		void	setPos(const glm::vec3& pos) 			{ _pos = pos; }

@@ -42,5 +42,4 @@ target_link_libraries(moe
         ${SDL2_LIBRARIES}
         ${GLEW_LIBRARIES}
         ${OPENGL_LIBRARIES}
-        glm
-        pthread)
+        glm)
