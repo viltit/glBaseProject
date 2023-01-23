@@ -15,8 +15,9 @@ namespace moe {
     };
 
     /**
-     * Todo: Use one drawable for several objects.
-     * Todo: Some sort of cache for vertex buffers.
+     * TODO: Graphics-API-Independent Interface Drawable ??
+     * TODO: Use one drawable for several objects.
+     * TODO: Some sort of cache for vertex buffers.
     */
     class DrawableGL {
     public:
@@ -46,6 +47,8 @@ namespace moe {
                 position }
         { }
     };
+
+
 
     class Rectangle : public DrawableGL {
     public:

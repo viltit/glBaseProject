@@ -3,9 +3,12 @@
 #include <SDL2/SDL.h>
 #include <string>
 #include <glm/gtc/type_ptr.hpp>
+#include <chrono>
+#include <thread>
 
 #include "Camera2D.hpp"
 #include "DrawableGL.hpp"
+#include "Timer.hpp"
 
 using namespace  moe;
 
@@ -44,6 +47,7 @@ App::App() :
 
 void App::loop() {
 
+    Timer timer { };
     Camera2D camera { glm::vec2{ _window.width(), _window.height() }, glm::vec3{ 0, 0, -1 } };
     // ugly Test: create 2500 drawables
     auto scene { std::vector<DrawableGL>() };
@@ -72,7 +76,9 @@ void App::loop() {
 
     bool isRunning = true;
     SDL_Event event;
+    timer.start();
     
+    // TODO: Run loop in a thread ? Run a render and a world update thread ?
     while (isRunning) {
         
         _window.clear();
@@ -130,5 +136,13 @@ void App::loop() {
             std::cout << "GL reported an error." << std::endl;
         }
         _window.swap();
+
+        // TODO: Fetch screens refresh rate
+        // TODO: Calculate FPS -> needs a second timer or frame counter because we do not want to calculate fps every frame
+        int deltaTime = timer.delta();
+        while (deltaTime < 17) {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1));
+            deltaTime += timer.delta();
+        } 
     }
 }
