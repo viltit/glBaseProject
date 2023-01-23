@@ -17,10 +17,10 @@ DrawableGL::DrawableGL(const std::vector<Vertex>& vertices, const glm::vec3& pos
         throw BufferError("Failed to create GL-Buffer");
     } 
     transform.setPos(position);
-    uploadVerices(vertices);
+    uploadVertices(vertices);
 }
 
-void DrawableGL::uploadVerices(const std::vector<Vertex>& vertices) {
+void DrawableGL::uploadVertices(const std::vector<Vertex>& vertices) {
 
         glBindVertexArray(vao);
         glBindBuffer(GL_ARRAY_BUFFER, vbo);

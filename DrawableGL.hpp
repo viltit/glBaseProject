@@ -25,10 +25,12 @@ namespace moe {
         DrawableGL(const std::vector<Vertex>& vertices, const glm::vec3& position);
         void draw(const Shader& shader) const;
 
+        // TODO: Destructor, free gl-resources
+
         Transform transform;
 
     protected:
-        void uploadVerices(const std::vector<Vertex>& vertices);
+        void uploadVertices(const std::vector<Vertex>& vertices);
 
         GLuint vbo;
         GLuint vao;

@@ -9,6 +9,7 @@
 #include "Camera2D.hpp"
 #include "DrawableGL.hpp"
 #include "Timer.hpp"
+#include "MultiDrawable.hpp"
 
 using namespace  moe;
 
@@ -17,6 +18,7 @@ const std::string vertexShader =
     "#version 400 core \n"
     "layout (location = 0) in vec3 v_pos; \n"
     "layout (location = 1) in vec4 v_color; \n"
+    "layout (location = 2) in mat4 T; \n"
     "\n"
     "out vec4 fragColor; \n"
     "uniform mat4 C; \n"
@@ -49,6 +51,26 @@ void App::loop() {
 
     Timer timer { };
     Camera2D camera { glm::vec2{ _window.width(), _window.height() }, glm::vec3{ 0, 0, -1 } };
+
+    // wip: use instanced drawing
+    auto color = glm::vec4{ 1, 0, 0, 1 };
+    auto vertices = std::vector<Vertex> {
+                    Vertex{ glm::vec3(-100, -100, 0.0), color },
+                    Vertex{ glm::vec3(100, -100, 0.0), color },
+                    Vertex{ glm::vec3(-100,  100, 0.0), color },
+                    Vertex{ glm::vec3(-100,  100, 0.0), color },
+                    Vertex{ glm::vec3(100, -100, 0.0), color },
+                    Vertex{ glm::vec3(100, 100, 0.0), color } };
+    auto positions = std::vector<glm::vec3> {
+            glm::vec3{ 1 }
+            // TODO: fill up 
+    };
+    auto test = MultiDrawableGL { 
+        vertices,
+        positions,
+        glm::vec3{ }
+    };
+
     // ugly Test: create 2500 drawables
     auto scene { std::vector<DrawableGL>() };
     scene.reserve(2500);
