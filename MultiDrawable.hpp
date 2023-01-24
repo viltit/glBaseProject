@@ -9,17 +9,17 @@
 
 namespace moe { 
 
+    // TODO: Also look into glMultiDrawElementsIndirect
+
     // TODO: Common interface with DrawableGL ??
     class MultiDrawableGL {
     public:
-        // TODO: Do we need a position since we will position each object individually?
-        // TODO later: Use game objects Transform instead of vec3?
-        // TODO: Can we upload matrix arrays to the shader or do we need position, scale and rotation?
-        //      ===> NO, glVertexAttribPointer supports 4 values max
+        // TODO later: Use game objects Transform instead of matrices ?
+        // TODO: How can we update the matrices and how costly is it ? (ie. glBufferSubData)
         // TODO: Color should be defined per object, not per vertex
         MultiDrawableGL(
             const std::vector<Vertex>& vertices,
-            const std::vector<glm::vec3>& positions, 
+            const std::vector<glm::mat4>& transformMatrices, 
             const glm::vec3& position);
 
              // TODO: Destructor, free gl-resources
@@ -28,7 +28,7 @@ namespace moe {
             Transform transform;
 
         protected:
-            void uploadVertices(const std::vector<Vertex>& vertices, const std::vector<glm::vec3>& positions);
+            void uploadVertices(const std::vector<Vertex>& vertices, const std::vector<glm::mat4>& transformMatrices);
 
             const size_t vertexBufferIndex;
             const size_t matrixBufferIndex;

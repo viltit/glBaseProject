@@ -6,15 +6,15 @@ namespace moe {
 
     MultiDrawableGL::MultiDrawableGL(
         const std::vector<Vertex>& vertices,
-        const std::vector<glm::vec3>& positions, 
+        const std::vector<glm::mat4>& transformMatrices, 
         const glm::vec3& position) 
         
         :   vertexBufferIndex { 0 },
-            matrixBufferIndex { 0 },
+            matrixBufferIndex { 1 },
             vbo             { 0, 0 },
             vao             { 0 },
             numVertices     { vertices.size() },
-            numObjects      { positions.size() }
+            numObjects      { transformMatrices.size() }
         {
             glGenBuffers(2, vbo);
             glCreateVertexArrays(1, &vao);
@@ -23,14 +23,23 @@ namespace moe {
                 throw BufferError("Failed to create GL-Buffer");
             } 
             transform.setPos(position);
-            uploadVertices(vertices, positions);
+            uploadVertices(vertices, transformMatrices);
         }
 
         void MultiDrawableGL::draw(const Shader& shader) const {
-            // TODO
+            // TODO: Catch errors
+            // set model matrix
+            int modelUniform = shader.uniform("M");
+            glUniformMatrix4fv(modelUniform, 1, GL_FALSE, glm::value_ptr(transform.worldMatrix()));
+
+            // draw...
+            glBindVertexArray(vao);
+            glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+            glDrawArraysInstanced(GL_TRIANGLES, 0, numVertices, numObjects);
+            glBindVertexArray(0);
         }
 
-        void MultiDrawableGL::uploadVertices(const std::vector<Vertex>& vertices, const std::vector<glm::vec3>& positions) {
+        void MultiDrawableGL::uploadVertices(const std::vector<Vertex>& vertices, const std::vector<glm::mat4>& transformMatrices) {
             glBindVertexArray(vao);
             // vertices
             glBindBuffer(GL_ARRAY_BUFFER, vbo[vertexBufferIndex]);
@@ -40,13 +49,29 @@ namespace moe {
             glEnableVertexAttribArray(1);
             glVertexAttribPointer(1, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, color));
             glBindBuffer(GL_ARRAY_BUFFER, 0);
-            // matrices
-            glBindBuffer(GL_ARRAY_BUFFER, vbo[matrixBufferIndex]);
-            glBufferData(GL_ARRAY_BUFFER, positions.size() * sizeof(glm::vec3), positions.data(), GL_DYNAMIC_DRAW);
-            glEnableVertexAttribArray(2);
-            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(glm::vec3), nullptr);
-            glVertexAttribDivisor(2, 1);   // Important, tells the shader to only update this attribute per instance, not per vertex
             
+            // matrices. We need to enable 4 Vertex Attributes because one Attribute can only hold 4 values
+            size_t vec4Size = sizeof(glm::vec4);
+            glBindBuffer(GL_ARRAY_BUFFER, vbo[matrixBufferIndex]);
+            glBufferData(GL_ARRAY_BUFFER, transformMatrices.size() * sizeof(glm::mat4), transformMatrices.data(), GL_STATIC_DRAW);
+
+            glEnableVertexAttribArray(2);
+            glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, nullptr);
+            glEnableVertexAttribArray(3); 
+            glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(1 * vec4Size));
+            glEnableVertexAttribArray(4); 
+            glVertexAttribPointer(4, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(2 * vec4Size));
+            glEnableVertexAttribArray(5); 
+            glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, 4 * vec4Size, (void*)(3 * vec4Size));
+
+            glVertexAttribDivisor(2, 1);   // Important, tells the shader to only update this attribute per instance, not per vertex
+            glVertexAttribDivisor(3, 1);
+            glVertexAttribDivisor(4, 1);
+            glVertexAttribDivisor(5, 1);
+
+
+
+
             glBindVertexArray(0);
         }
 }

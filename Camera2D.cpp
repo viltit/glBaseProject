@@ -8,7 +8,7 @@ namespace moe {
         :   _pos { position },
             _rot { rotation },
             _zoom { zoom },
-            _minZoom { 0.1 },
+            _minZoom { 0.03 },
             _maxZoom { 100 },
             _sensitivity { 0.8 },
             // TODO: Fixing orthographic matrix to window size leads to a bigger visible scene on bigger windows

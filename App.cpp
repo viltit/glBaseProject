@@ -27,7 +27,7 @@ const std::string vertexShader =
     "void main() \n"
     "{ \n"
     "    fragColor = v_color; \n"
-    "    gl_Position = C * M * vec4(v_pos, 1.0); \n"
+    "    gl_Position = C * T * M * vec4(v_pos, 1.0); \n"
     "}";
 
 const std::string fragmentShader = 
@@ -61,14 +61,28 @@ void App::loop() {
                     Vertex{ glm::vec3(-100,  100, 0.0), color },
                     Vertex{ glm::vec3(100, -100, 0.0), color },
                     Vertex{ glm::vec3(100, 100, 0.0), color } };
-    auto positions = std::vector<glm::vec3> {
-            glm::vec3{ 1 }
-            // TODO: fill up 
-    };
+    
+    auto positions = std::vector<glm::mat4>();
+    positions.reserve(100000);
+    for (int i = 0; i < 100000; i++) {
+        
+        float x = (i / 100.f) * 300.f - 7500.f;
+        float y = (i % 100) * 300.f - 7500.f;
+        float z = (float)(rand()) / (float)(RAND_MAX) * 2.f - 1.f;
+        float scale = (float)(rand()) / (float)(RAND_MAX) * 1.3f + 0.2f;
+        float rotation = (float)(rand()) / (float)(RAND_MAX) * 360.f;
+        
+        glm::vec3 translation = glm::vec3{ x, y , z };
+        Transform transform{ translation, glm::vec3{ scale, scale, scale } };
+        transform.rotate(rotation, glm::vec3{ 0.f, 0.f, 1.f });
+
+        positions.push_back(transform.worldMatrix());
+    }
+
     auto test = MultiDrawableGL { 
         vertices,
         positions,
-        glm::vec3{ }
+        glm::vec3{ 1 }
     };
 
     // ugly Test: create 2500 drawables
@@ -148,9 +162,12 @@ void App::loop() {
         _shader.on();
         GLuint cameraUniform = _shader.uniform("C");
         glUniformMatrix4fv(cameraUniform, 1, GL_FALSE, glm::value_ptr(camera.matrix()));
-        for (const auto& drawable : scene) {
+        
+
+        test.draw(_shader);
+        /* for (const auto& drawable : scene) {
             drawable.draw(_shader);
-        }
+        } */
         _shader.off();
 
         // TODO: poll errors from gl
