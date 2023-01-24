@@ -11,4 +11,8 @@ namespace moe {
     public:
         BufferError(const char* msg) : std::runtime_error(msg) { };
     };
+    class ShaderError : public std::runtime_error {
+    public:
+        ShaderError(const char* msg) : std::runtime_error(msg) { };
+    };
 }

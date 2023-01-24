@@ -19,6 +19,7 @@ const std::string vertexShader =
     "layout (location = 0) in vec3 v_pos; \n"
     "layout (location = 1) in vec4 v_color; \n"
     "layout (location = 2) in mat4 T; \n"
+    "layout (location = 6) in vec4 color; \n"
     "\n"
     "out vec4 fragColor; \n"
     "uniform mat4 C; \n"
@@ -26,8 +27,8 @@ const std::string vertexShader =
     "\n"
     "void main() \n"
     "{ \n"
-    "    fragColor = v_color; \n"
-    "    gl_Position = C * T * M * vec4(v_pos, 1.0); \n"
+    "    fragColor = color; \n"
+    "    gl_Position = C * M * T * vec4(v_pos, 1.0); \n"
     "}";
 
 const std::string fragmentShader = 
@@ -63,7 +64,9 @@ void App::loop() {
                     Vertex{ glm::vec3(100, 100, 0.0), color } };
     
     auto positions = std::vector<glm::mat4>();
+    auto colors = std::vector<glm::vec4>();
     positions.reserve(100000);
+    colors.reserve(10000);
     for (int i = 0; i < 100000; i++) {
         
         float x = (i / 100.f) * 300.f - 7500.f;
@@ -77,11 +80,18 @@ void App::loop() {
         transform.rotate(rotation, glm::vec3{ 0.f, 0.f, 1.f });
 
         positions.push_back(transform.worldMatrix());
+
+        float r = (float)(rand()) / (float)(RAND_MAX);
+        float g = (float)(rand()) / (float)(RAND_MAX);
+        float b = (float)(rand()) / (float)(RAND_MAX);
+        float a = (float)(rand()) / (float)(RAND_MAX) * 0.8f + 0.2f;
+        colors.push_back(glm::vec4{ r, g, b, a});
     }
 
     auto test = MultiDrawableGL { 
         vertices,
         positions,
+        colors,
         glm::vec3{ 1 }
     };
 
@@ -163,7 +173,7 @@ void App::loop() {
         GLuint cameraUniform = _shader.uniform("C");
         glUniformMatrix4fv(cameraUniform, 1, GL_FALSE, glm::value_ptr(camera.matrix()));
         
-
+        test.transform.rotate(0.1, glm::vec3{ 0, 0, 1});
         test.draw(_shader);
         /* for (const auto& drawable : scene) {
             drawable.draw(_shader);

@@ -1,4 +1,5 @@
 #include "Shader.hpp"
+#include "GLErrors.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -70,6 +71,7 @@ void Shader::compile(const std::string& shader, GLuint shaderID) {
         //TODO: Proper error handling
         std::cout << "Unable to compile shader " << shader << " Error-Message:" << std::endl;
         std::cout << log.data();
+        throw ShaderError("");
     }
 }
 
@@ -96,6 +98,7 @@ void Shader::link() {
         //TODO: Proper error handling
         std::cout << "Unable to link shaders. Error-Message:" << std::endl;
         std::cout << log.data();
+        throw ShaderError("");
 	}
 }
 }
