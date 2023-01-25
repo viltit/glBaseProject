@@ -18,18 +18,24 @@ namespace moe {
             numVertices     { vertices.size() },
             numObjects      { transformMatrices.size() }
         {
-            glGenBuffers(3, vbo);
+            glGenBuffers(3, &vbo[0]);
             glCreateVertexArrays(1, &vao);
             if (vbo[0] == 0 || vbo[1] == 0 || vbo[2] == 0 || vao == 0) {
-                // TODO: Error handling
                 throw BufferError("Failed to create GL-Buffer");
             } 
             transform.setPos(position);
             uploadVertices(vertices, transformMatrices, colors);
         }
 
+        MultiDrawableGL::~MultiDrawableGL() {
+            glDeleteBuffers(3, &vbo[0]);
+            glDeleteVertexArrays(1, &vao);
+        }
+
         void MultiDrawableGL::update(const std::vector<glm::mat4>& positions) {
-            // TODO: Make sure positions.count() == numObjects
+            if (positions.size() > numObjects) {
+                throw BufferError("Trying to buffer more data than buffer is capable of.");
+            }
             glBindBuffer(GL_ARRAY_BUFFER, vbo[matrixBufferIndex]);
             glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::mat4) * positions.size(), positions.data());
             glBindBuffer(GL_ARRAY_BUFFER, 0);

@@ -157,10 +157,10 @@ void App::loop() {
                     break;
                 case SDL_MOUSEWHEEL:
                     if (event.wheel.y > 0) {
-                        camera.zoomIn(0.1);
+                        camera.zoomIn(0.1f);
                     }
                     else if (event.wheel.y < 0) {
-                        camera.zoomOut(0.1);
+                        camera.zoomOut(0.1f);
                     }
                     break;
             }
