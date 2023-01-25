@@ -17,6 +17,7 @@ namespace moe {
         // TODO later: Use game objects Transform instead of matrices ?
         // TODO: How can we update the matrices and how costly is it ? (ie. glBufferSubData)
         // TODO: Vertices do not need colors anymore
+        // TODO: using translation vector and quaternion instead of matrix would reduce data by 50%  compared to a matrix
         MultiDrawableGL(
             const std::vector<Vertex>& vertices,
             const std::vector<glm::mat4>& transformMatrices, 
@@ -24,7 +25,9 @@ namespace moe {
             const glm::vec3& position);
 
              // TODO: Destructor, free gl-resources
-
+            
+            // TODO: wip testing, update ALL matrices every frame
+            void update(const std::vector<glm::mat4>& positions);
             void draw(const Shader& shader) const;
             Transform transform;
 

@@ -28,6 +28,13 @@ namespace moe {
             uploadVertices(vertices, transformMatrices, colors);
         }
 
+        void MultiDrawableGL::update(const std::vector<glm::mat4>& positions) {
+            // TODO: Make sure positions.count() == numObjects
+            glBindBuffer(GL_ARRAY_BUFFER, vbo[matrixBufferIndex]);
+            glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glm::mat4) * positions.size(), positions.data());
+            glBindBuffer(GL_ARRAY_BUFFER, 0);
+        }
+
         void MultiDrawableGL::draw(const Shader& shader) const {
             // TODO: Catch errors
             // set model matrix

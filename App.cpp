@@ -174,6 +174,10 @@ void App::loop() {
         glUniformMatrix4fv(cameraUniform, 1, GL_FALSE, glm::value_ptr(camera.matrix()));
         
         test.transform.rotate(0.1, glm::vec3{ 0, 0, 1});
+        for (auto& position : positions) {
+            position = glm::rotate(position, -3.f / 360.f, glm::vec3{ 0 , 0, 1 });
+        }
+        test.update(positions);
         test.draw(_shader);
         /* for (const auto& drawable : scene) {
             drawable.draw(_shader);
