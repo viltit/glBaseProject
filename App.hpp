@@ -1,6 +1,8 @@
 #include "Window.hpp"
-#include "Shader.hpp"
 
+/**
+ * TODO: This class should controll the current screen, ie MainMenu, Game, Editor, ...
+*/
 class App {
 
 public:
@@ -10,6 +12,4 @@ public:
 
 private:
     moe::Window _window;
-    // TODO: Shader should be bound to groups of drawable shapes
-    moe::Shader _shader;
 };

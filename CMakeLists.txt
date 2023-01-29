@@ -37,7 +37,8 @@ add_executable(moe main.cpp Window.cpp
                 App.cpp
                 DrawableGL.cpp
                 Camera2D.cpp
-                MultiDrawable.cpp)
+                MultiDrawable.cpp
+                FileReader.cpp)
 
 target_link_libraries(moe
         ${SDL2_LIBRARIES}
