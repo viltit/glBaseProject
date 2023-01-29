@@ -20,7 +20,8 @@ using namespace  moe;
 
 App::App(const std::vector<std::string>& args) :
     // TODO: Test hidpi window option
-    _window { "hello Triangle", 0 ,0, moe::WindowStyle::fullscreen }
+    _window { "hello Triangle", 0 ,0, moe::WindowStyle::fullscreen },
+    _keyPressed (360, false)   // TODO: No magic numbers! (how to get number of SDL Key-Events?)
 {
     // TODO: Some kind of argument testing, maybe map allowed arguments
     if (args.size() > 1) {
@@ -142,23 +143,15 @@ void App::loop() {
                     // TODO: Window resize
                     // TODO: Handle keyboard and mouse inputs in a dedicated class without hardcoded key-bindings
                     case SDL_KEYDOWN:
+                        _keyPressed[event.key.keysym.sym] = true;
                         switch(event.key.keysym.sym) {
                             case SDLK_ESCAPE:  
                                 isRunning = false;
                                 break;
-                            case SDLK_a:
-                                camera.translate(glm::vec3(5, 0, 0));
-                                break;
-                            case SDLK_d:
-                                camera.translate(glm::vec3(-5, 0, 0));
-                                break;
-                            case SDLK_w:
-                                camera.translate(glm::vec3(0, -5, 0));
-                                break;
-                            case SDLK_s:
-                                camera.translate(glm::vec3(0, 5, 0));
-                                break;
                         }
+                        break;
+                    case SDL_KEYUP:
+                        _keyPressed[event.key.keysym.sym] = false;
                         break;
                     case SDL_MOUSEWHEEL:
                         if (event.wheel.y > 0) {
@@ -171,8 +164,8 @@ void App::loop() {
                 }
             }
 
-
             camera.update();
+            updateInput(camera);
 
             try {
                 shader.on();
@@ -216,5 +209,21 @@ void App::loop() {
     }
     catch(std::runtime_error e) {
         spdlog::critical(e.what());
+    }
+}
+
+void App::updateInput(Camera2D& camera) {
+
+    if (_keyPressed[SDLK_a]) {
+        camera.translate(glm::vec3(5, 0, 0));
+    }
+    if (_keyPressed[SDLK_d]) {
+        camera.translate(glm::vec3(-5, 0, 0));
+    }
+    if (_keyPressed[SDLK_w]) {
+        camera.translate(glm::vec3(0, -5, 0));
+    }
+    if (_keyPressed[SDLK_s]) {
+        camera.translate(glm::vec3(0, 5, 0));
     }
 }

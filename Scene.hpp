@@ -23,8 +23,26 @@
 
 #include "Transform.hpp"
 
+#include <vector>
+#include <map>
+
+class GameObject;   // holds parent and children
+class Drawable;     // holds vertex data
+class Renderer;
+
 class Scene {
+
+    void draw();  // send a sorted list of drawables to the renderer
     
+    std::vector<GameObject> objects; 
+    std::vector<Drawable> drawables;
 
+    // every GameObject with a drawable registers its drawable index here
+    // TODO: Working with indices might be cumbersome
+    // TODO: We also need a good way to sort the drawables (for transparency, screen clipping, grouping Instanced Draws, ...)
+    // ==> This probably will be its own class 
+    std::map<int, int> registeredDrawables;   
 
+    // More than one? Or has the renderer sub-renderer? (ie. a debugging renderer)
+    Renderer* renderer;
 };
