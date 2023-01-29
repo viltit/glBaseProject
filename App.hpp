@@ -1,3 +1,8 @@
+#pragma once
+
+#include <string>
+#include <vector>
+
 #include "Window.hpp"
 
 /**
@@ -6,7 +11,8 @@
 class App {
 
 public:
-    App();
+    App(const std::vector<std::string>& args);
+    ~App();
 
     void loop();
 

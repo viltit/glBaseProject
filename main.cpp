@@ -1,15 +1,15 @@
 #include "App.hpp"
-#include <iostream>
+
+#include <string>
+#include <vector>
 
 int main(int argc, char** argv) {
 
-    try {
-        App app = App();
-        app.loop();
-
-        return 0;
+    std::vector<std::string> arguments { };
+    for (int i = 0; i < argc; i++) {
+        arguments.push_back(argv[i]);
     }
-    catch(std::exception e) {
-        std::cout << e.what() << std::endl;
-    }
+    App app = App(arguments);
+    app.loop();
+    return 0;
 }

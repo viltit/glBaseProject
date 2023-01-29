@@ -4,12 +4,20 @@ cmake_minimum_required(VERSION 3.11)
 set(CMAKE_CXX_STANDARD 14)
 project(moe)
 
-#Download glm from github
+# ------------ Repositories
+# glm for 3d-Math
 include(FetchContent) 
 FetchContent_Declare (glm                 
         GIT_REPOSITORY https://github.com/g-truc/glm.git
 ) 
 FetchContent_MakeAvailable(glm)
+
+# spdlog for a nice logger
+FetchContent_Declare (spdlog                 
+        GIT_REPOSITORY https://github.com/gabime/spdlog.git
+        GIT_TAG ad0e89cbfb4d0c1ce4d097e134eb7be67baebb36
+) 
+FetchContent_MakeAvailable(spdlog)
 
 #Locate GoogleTest
 #find_package(GTest REQUIRED)
@@ -41,7 +49,9 @@ add_executable(moe main.cpp Window.cpp
                 FileReader.cpp)
 
 target_link_libraries(moe
+        PUBLIC spdlog
+        glm
         ${SDL2_LIBRARIES}
         ${GLEW_LIBRARIES}
         ${OPENGL_LIBRARIES}
-        glm)
+        )

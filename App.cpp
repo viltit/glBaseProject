@@ -6,24 +6,52 @@
 #include <chrono>
 #include <thread>
 
+#include "spdlog/spdlog.h"
+#include "spdlog/sinks/basic_file_sink.h"
+
 #include "Camera2D.hpp"
 #include "DrawableGL.hpp"
 #include "Timer.hpp"
 #include "MultiDrawable.hpp"
 #include "FileReader.hpp"
+#include "GLErrors.hpp"
 
 using namespace  moe;
 
-
-App::App() :
+App::App(const std::vector<std::string>& args) :
     // TODO: Test hidpi window option
     _window { "hello Triangle", 0 ,0, moe::WindowStyle::fullscreen }
-{ }
+{
+    // TODO: Some kind of argument testing, maybe map allowed arguments
+    if (args.size() > 1) {
+        if (args[1] == "debug") {
+            spdlog::set_level(spdlog::level::debug);
+        }
+        else if (args[1] == "trace") {
+            spdlog::set_level(spdlog::level::trace);
+        }
+        else if (args[1] == "info") {
+            spdlog::set_level(spdlog::level::info);
+        }
+        else {
+            spdlog::set_level(spdlog::level::warn);
+        }
+    }
+    else {
+            spdlog::set_level(spdlog::level::warn);
+    }
+    spdlog::info("Application is starting.");
+}
+
+App::~App() {
+    spdlog::info("Application is ending.");
+}
 
 void App::loop() {
 
     try {
         Shader shader { 
+            "Simple Shader",
             FileReader().toString("Shaders/Simple.vert"), 
             FileReader().toString("Shaders/Simple.frag") 
             };
@@ -146,24 +174,30 @@ void App::loop() {
 
             camera.update();
 
-            shader.on();
-            GLuint cameraUniform = shader.uniform("C");
-            glUniformMatrix4fv(cameraUniform, 1, GL_FALSE, glm::value_ptr(camera.matrix()));
-            
-            test.transform.rotate(0.1, glm::vec3{ 0, 0, 1});
-            for (auto& position : positions) {
-                position = glm::rotate(position, -3.f / 360.f, glm::vec3{ 0 , 0, 1 });
-            }
-            test.update(positions);
-            test.draw(shader);
-            /* for (const auto& drawable : scene) {
-                drawable.draw(shader);
-            } */
-            shader.off();
+            try {
+                shader.on();
+                GLuint cameraUniform = shader.uniform("C");
+                glUniformMatrix4fv(cameraUniform, 1, GL_FALSE, glm::value_ptr(camera.matrix()));
+                
+                test.transform.rotate(0.1, glm::vec3{ 0, 0, 1});
+                for (auto& position : positions) {
+                    position = glm::rotate(position, -3.f / 360.f, glm::vec3{ 0 , 0, 1 });
+                }
+                test.update(positions);
+                test.draw(shader);
+                /* for (const auto& drawable : scene) {
+                    drawable.draw(shader);
+                } */
+                shader.off();
 
-            // TODO: poll errors from gl
-            if (glGetError() != 0) {
-                std::cout << "GL reported an error." << std::endl;
+                // TODO: poll errors from gl
+                GLenum err;
+                while((err = glGetError()) != GL_NO_ERROR) {
+                    spdlog::warn("Drawing loop stumbled on gl-error " + err);
+                }
+            }
+            catch (ShaderError e) {
+                spdlog::warn(e.what());
             }
             _window.swap();
 
@@ -176,7 +210,11 @@ void App::loop() {
             } 
         }
     }
+    catch(ShaderCompileError e) {
+        spdlog::error(e.what());
+        spdlog::error(e.log);
+    }
     catch(std::runtime_error e) {
-        std::cout << e.what() << std::endl;
+        spdlog::critical(e.what());
     }
 }
